@@ -26,7 +26,7 @@ CREATE TABLE MemberTimeSlots (
 	day INT,
 	week INT,
 	isAvailable BOOLEAN,
-	PRIMARY KEY(memberId),
+	PRIMARY KEY(memberId, day, week),
 	FOREIGN KEY (memberId)
 		REFERENCES MemberData(memberId)
 );
@@ -36,7 +36,7 @@ CREATE TABLE TrainerTimeSlots (
 	day INT,
 	week INT,
 	isAvailable BOOLEAN,
-	PRIMARY KEY(trainerId),
+	PRIMARY KEY(trainerId, day, week),
 	FOREIGN KEY (trainerId)
 		REFERENCES TrainerData(trainerId)
 );
@@ -46,7 +46,7 @@ CREATE TABLE RoomTimeSlots (
 	day INT,
 	week INT,
 	isAvailable BOOLEAN,
-	PRIMARY KEY(roomNumber),
+	PRIMARY KEY(roomNumber, day, week),
 	FOREIGN KEY (roomNumber)
 		REFERENCES RoomData(roomNumber)
 );

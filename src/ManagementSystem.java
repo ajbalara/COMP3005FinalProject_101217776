@@ -59,8 +59,9 @@ public class ManagementSystem {
         try{
             SCANNER.close();
             conn.close();
-            Thread.sleep(1000);
-        } catch (SQLException | InterruptedException e){}
+        } catch (SQLException e){
+            System.out.println("Error closing program");
+        }
     }
 
     public static void main(String[] args) {

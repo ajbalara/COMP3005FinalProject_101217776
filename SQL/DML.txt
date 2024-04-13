@@ -21,7 +21,7 @@ VALUES
     (15),
     (30);
 
--- Inserting data into MemberTimeSlots table
+-- Inserting data into MemberTimeSlots table test
 INSERT INTO MemberTimeSlots (memberId, day, week, isAvailable) 
 VALUES 
     (1, 1, 1, true),
