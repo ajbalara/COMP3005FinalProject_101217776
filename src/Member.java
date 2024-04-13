@@ -308,5 +308,190 @@ public class Member extends User{
     }
 
     private void manageSchedule() {
+        try {
+            // Display MemberTimeSlots for the member
+            System.out.println("Your Time Slots:");
+            displayMemberTimeSlots();
+
+            // Ask the user which schedule they want to view
+            System.out.println("\nChoose which schedule you want to view:");
+            System.out.println("1. Trainer Schedule");
+            System.out.println("2. Group Class Schedule");
+            System.out.println("0. Exit");
+            System.out.print("Enter your choice: ");
+            int choice = Integer.parseInt(scanner.nextLine());
+
+            switch (choice) {
+                case 1:
+                    viewTrainerSchedule();
+                    break;
+                case 2:
+                    viewGroupClassSchedule();
+                    break;
+                case 0:
+                    System.out.println("Exiting manage schedule.");
+                    return;
+                default:
+                    System.out.println("Invalid choice. Please enter a number between 0 and 2.");
+                    break;
+            }
+        } catch (SQLException e) {
+            System.out.println("SQL Exception: " + e.getMessage());
+        }
+    }
+
+    private void displayMemberTimeSlots() throws SQLException {
+        // SQL query to retrieve MemberTimeSlots for the member
+        String sqlSelect = "SELECT * FROM MemberTimeSlots WHERE memberId = ?";
+        PreparedStatement preparedStatement = conn.prepareStatement(sqlSelect);
+        preparedStatement.setInt(1, id);
+
+        // Execute the query
+        ResultSet resultSet = preparedStatement.executeQuery();
+
+        // Display MemberTimeSlots
+        while (resultSet.next()) {
+            int day = resultSet.getInt("day");
+            int week = resultSet.getInt("week");
+            boolean isAvailable = resultSet.getBoolean("isAvailable");
+            System.out.println("Day: " + day + ", Week: " + week + ", Available: " + isAvailable);
+        }
+    }
+
+    private void viewTrainerSchedule() throws SQLException {
+        // Display all available time slots for all trainers along with TrainerData
+        System.out.println("Trainer Schedule:");
+        String sqlSelect = "SELECT TrainerTimeSlots.*, TrainerData.trainerId, TrainerData.firstName, " +
+                "TrainerData.lastName, TrainerData.specialty " +
+                "FROM TrainerTimeSlots " +
+                "INNER JOIN TrainerData ON TrainerTimeSlots.trainerId = TrainerData.trainerId " +
+                "WHERE TrainerTimeSlots.isAvailable = true";
+        PreparedStatement preparedStatement = conn.prepareStatement(sqlSelect);
+        ResultSet resultSet = preparedStatement.executeQuery();
+
+        // Display available time slots, TrainerData, and specialty
+        while (resultSet.next()) {
+            int trainerId = resultSet.getInt("trainerId");
+            int day = resultSet.getInt("day");
+            int week = resultSet.getInt("week");
+            String firstName = resultSet.getString("firstName");
+            String lastName = resultSet.getString("lastName");
+            String specialty = resultSet.getString("specialty");
+            System.out.println("Trainer ID: " + trainerId + ", Name: " + firstName + " " + lastName +
+                    ", Specialty: " + specialty + ", Day: " + day + ", Week: " + week);
+        }
+
+        // Prompt user to select a time slot to book
+        System.out.print("\nEnter the Trainer ID of the time slot you want to book (enter 0 to cancel): ");
+        int selectedTrainerId = Integer.parseInt(scanner.nextLine());
+        if (selectedTrainerId == 0) {
+            System.out.println("Booking cancelled.");
+            return;
+        }
+
+        System.out.print("Enter the day of the time slot: ");
+        int selectedDay = Integer.parseInt(scanner.nextLine());
+        System.out.print("Enter the week of the time slot: ");
+        int selectedWeek = Integer.parseInt(scanner.nextLine());
+
+        // Check if the selected time slot is available
+        boolean isAvailable = checkTrainerAvailability(selectedTrainerId, selectedDay, selectedWeek);
+        if (!isAvailable) {
+            System.out.println("The selected time slot is not available.");
+            return;
+        }
+
+        // Create a new entry in MemberTimeSlots for the member
+        String sqlInsert = "INSERT INTO MemberTimeSlots (memberId, day, week, isAvailable) VALUES (?, ?, ?, ?)";
+        PreparedStatement insertStatement = conn.prepareStatement(sqlInsert);
+        insertStatement.setInt(1, id);
+        insertStatement.setInt(2, selectedDay);
+        insertStatement.setInt(3, selectedWeek);
+        insertStatement.setBoolean(4, false);
+        insertStatement.executeUpdate();
+
+        // Update the corresponding TrainerTimeSlots entry
+        String updateSql = "UPDATE TrainerTimeSlots SET isAvailable = false WHERE trainerId = ? AND day = ? AND week = ?";
+        PreparedStatement updateStatement = conn.prepareStatement(updateSql);
+        updateStatement.setInt(1, selectedTrainerId);
+        updateStatement.setInt(2, selectedDay);
+        updateStatement.setInt(3, selectedWeek);
+        updateStatement.executeUpdate();
+
+        System.out.println("Time slot booked successfully.");
+    }
+
+    private boolean checkTrainerAvailability(int trainerId, int day, int week) throws SQLException {
+        String sqlSelect = "SELECT * FROM TrainerTimeSlots " +
+                "WHERE trainerId = ? AND day = ? AND week = ? AND isAvailable = true";
+        PreparedStatement preparedStatement = conn.prepareStatement(sqlSelect);
+        preparedStatement.setInt(1, trainerId);
+        preparedStatement.setInt(2, day);
+        preparedStatement.setInt(3, week);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        return resultSet.next();
+    }
+
+    private void viewGroupClassSchedule() throws SQLException {
+        // Display all group classes along with their details
+        System.out.println("Group Class Schedule:");
+        String sqlSelect = "SELECT * FROM GroupClasses";
+        PreparedStatement preparedStatement = conn.prepareStatement(sqlSelect);
+        ResultSet resultSet = preparedStatement.executeQuery();
+
+        // Display group classes
+        while (resultSet.next()) {
+            int classId = resultSet.getInt("classId");
+            String className = resultSet.getString("name");
+            int day = resultSet.getInt("day");
+            int week = resultSet.getInt("week");
+            System.out.println("Class ID: " + classId + ", Name: " + className + ", Day: " + day + ", Week: " + week);
+        }
+
+        // Prompt user to select a class to register
+        System.out.print("\nEnter the Class ID of the class you want to register (enter 0 to cancel): ");
+        int selectedClassId = Integer.parseInt(scanner.nextLine());
+        if (selectedClassId == 0) {
+            System.out.println("Registration cancelled.");
+            return;
+        }
+
+        // Check if the member has an available time slot for the selected class
+        boolean isAvailable = checkMemberAvailability(selectedClassId);
+        if (!isAvailable) {
+            System.out.println("You don't have an available time slot for the selected class.");
+            return;
+        }
+
+        // Create a new entry in MemberTimeSlots for the member
+        String sqlInsert = "INSERT INTO MemberTimeSlots (memberId, day, week, isAvailable) VALUES (?, ?, ?, ?)";
+        PreparedStatement insertStatement = conn.prepareStatement(sqlInsert);
+        insertStatement.setInt(1, id);
+        insertStatement.setInt(2, resultSet.getInt("day"));
+        insertStatement.setInt(3, resultSet.getInt("week"));
+        insertStatement.setBoolean(4, false);
+        insertStatement.executeUpdate();
+
+        // Add an entry to the ClassRegistered table
+        String insertClassRegistered = "INSERT INTO ClassRegistered (memberId, classId) VALUES (?, ?)";
+        PreparedStatement insertClassRegisteredStatement = conn.prepareStatement(insertClassRegistered);
+        insertClassRegisteredStatement.setInt(1, id);
+        insertClassRegisteredStatement.setInt(2, selectedClassId);
+        insertClassRegisteredStatement.executeUpdate();
+
+        System.out.println("Class registered successfully.");
+    }
+
+    private boolean checkMemberAvailability(int classId) throws SQLException {
+        String sqlSelect = "SELECT * FROM MemberTimeSlots " +
+                "WHERE memberId = ? AND day = (SELECT day FROM GroupClasses WHERE classId = ?) " +
+                "AND week = (SELECT week FROM GroupClasses WHERE classId = ?) " +
+                "AND isAvailable = true";
+        PreparedStatement preparedStatement = conn.prepareStatement(sqlSelect);
+        preparedStatement.setInt(1, id);
+        preparedStatement.setInt(2, classId);
+        preparedStatement.setInt(3, classId);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        return resultSet.next();
     }
 }

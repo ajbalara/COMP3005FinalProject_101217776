@@ -8,11 +8,25 @@ public class ManagementSystem {
     public static final Scanner SCANNER = new Scanner(System.in);
     public static final int MEMBERSHIP_FEE = 40;
     public static final int REGISTRATION_FEE = 100;
+    public static final int TRAINER_FEE = 200;
 
     private static Connection conn;
 
-    public static Connection getConn() {
-        return conn;
+    public static void setUpConnection(){
+        System.out.println("Welcome to Ottawa Health and Fitness Club!");
+        System.out.println("Setting up DB Connection...");
+        try{
+            Class.forName("org.postgresql.Driver");
+            // Connect to the database
+            conn = DriverManager.getConnection(url, user, password);
+            System.out.println("DB Connection Formed Successfully!");
+            if(conn == null){
+                throw new SQLException();
+            }
+        } catch (ClassNotFoundException | SQLException e){
+            System.out.println("Error Connecting to DB");
+            System.exit(1);
+        }
     }
 
     private static User retrieveUserType(){
@@ -30,23 +44,6 @@ public class ManagementSystem {
                     return new Administrator(SCANNER, conn);
             }
             System.out.println("Invalid user type");
-        }
-    }
-
-    public static void setUpConnection(){
-        System.out.println("Welcome to Ottawa Health and Fitness Club!");
-        System.out.println("Setting up DB Connection...");
-        try{
-            Class.forName("org.postgresql.Driver");
-            // Connect to the database
-            conn = DriverManager.getConnection(url, user, password);
-            System.out.println("DB Connection Formed Successfully!");
-            if(conn == null){
-                throw new SQLException();
-            }
-        } catch (ClassNotFoundException | SQLException e){
-            System.out.println("Error Connecting to DB");
-            System.exit(1);
         }
     }
 
