@@ -155,7 +155,7 @@ public class Administrator extends User{
             System.out.println("1. Add a class");
             System.out.println("2. Remove a class");
             System.out.println("3. Update a class");
-            System.out.print("Enter the number corresponding to the action: ");
+            System.out.print("Enter the number corresponding to the action, or enter 0 to exit: ");
             int actionChoice;
             try {
                 actionChoice = Integer.parseInt(scanner.nextLine());
@@ -173,6 +173,9 @@ public class Administrator extends User{
                     break;
                 case 3:
                     updateExistingClass();
+                    break;
+                case 0:
+                    exit = true;
                     break;
                 default:
                     System.out.println("Invalid action choice.");
@@ -224,6 +227,15 @@ public class Administrator extends User{
             // Prompt user for class ID to remove
             System.out.print("Enter class ID to remove: ");
             int classId = Integer.parseInt(scanner.nextLine());
+
+            // Delete entries from ClassRegistered table
+            String sqlDeleteClassRegistered = "DELETE FROM ClassRegistered WHERE classId = ?";
+            try (PreparedStatement preparedStatement = conn.prepareStatement(sqlDeleteClassRegistered)) {
+                preparedStatement.setInt(1, classId);
+                preparedStatement.executeUpdate();
+            } catch (SQLException e) {
+                System.out.println("SQL Exception: " + e.getMessage());
+            }
 
             // Delete class from the database
             String sqlDelete = "DELETE FROM GroupClasses WHERE classId = ?";
@@ -291,8 +303,23 @@ public class Administrator extends User{
             } catch (SQLException e) {
                 System.out.println("SQL Exception: " + e.getMessage());
             }
+
+            if (fieldName.equals("day") || fieldName.equals("week")) {
+                deregisterClassMembers(classId);
+            }
         } catch (NumberFormatException e) {
             System.out.println("Invalid input. Please enter a number for class ID, field choice, and new value.");
+        }
+    }
+
+    private void deregisterClassMembers(int classId) {
+        // Delete entries from ClassRegistered table
+        String sqlDeleteClassRegistered = "DELETE FROM ClassRegistered WHERE classId = ?";
+        try (PreparedStatement preparedStatement = conn.prepareStatement(sqlDeleteClassRegistered)) {
+            preparedStatement.setInt(1, classId);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("SQL Exception: " + e.getMessage());
         }
     }
 

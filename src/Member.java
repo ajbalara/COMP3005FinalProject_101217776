@@ -317,8 +317,7 @@ public class Member extends User{
             System.out.println("\nChoose which schedule you want to view:");
             System.out.println("1. Trainer Schedule");
             System.out.println("2. Group Class Schedule");
-            System.out.println("0. Exit");
-            System.out.print("Enter your choice: ");
+            System.out.print("Enter your choice, or enter 0 to exit: ");
             int choice = Integer.parseInt(scanner.nextLine());
 
             switch (choice) {
