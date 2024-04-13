@@ -16,6 +16,7 @@ public class Trainer extends User{
     }
     @Override
     public void doActivity(){
+        scanner.nextLine();
         switch (nextActivityIndex){
             case 0:
                 manageSchedule();
