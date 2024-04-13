@@ -8,8 +8,6 @@ public class ManagementSystem {
     public static final Scanner SCANNER = new Scanner(System.in);
     public static final int MEMBERSHIP_FEE = 40;
     public static final int REGISTRATION_FEE = 100;
-    public static final int TRAINER_FEE = 200;
-
     private static Connection conn;
 
     public static void setUpConnection(){
