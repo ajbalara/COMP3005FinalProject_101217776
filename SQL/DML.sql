@@ -10,7 +10,7 @@ VALUES
 INSERT INTO TrainerData (firstName, lastName, specialty) 
 VALUES 
     ('Michael', 'Brown', 'Weightlifting'),
-    ('Emily', 'Davis', 'Yoga'),
+    ('Emily', 'Davis', 'Boxing'),
     ('Chris', 'Wilson', 'Cardio'),
     ('Sarah', 'Martinez', 'Pilates');
 
@@ -20,14 +20,6 @@ VALUES
     (20),
     (15),
     (30);
-
--- Inserting data into MemberTimeSlots table
-INSERT INTO MemberTimeSlots (memberId, day, week, isAvailable) 
-VALUES 
-    (1, 1, 1, true),
-    (2, 2, 1, true),
-    (3, 3, 1, true),
-    (4, 4, 1, true);
 
 -- Inserting data into TrainerTimeSlots table
 INSERT INTO TrainerTimeSlots (trainerId, day, week, isAvailable) 
@@ -57,30 +49,22 @@ VALUES
 INSERT INTO Equipment (name, condition, isWeight) 
 VALUES 
     ('Treadmill', 'brand new', false),
-    ('Dumbbells', 'used', true),
-    ('Yoga Mat', 'brand new', false),
+    ('Bench Press', 'used', true),
+    ('Chest Fly', 'brand new', true),
     ('Stationary Bike', 'brand new', false);
 
 -- Inserting data into Exercises table
 INSERT INTO Exercises (memberId, equipmentId, target, actual) 
 VALUES 
-    (1, 1, 30, 30),
-    (2, 2, 15, 15),
-    (3, 3, 20, 20),
-    (4, 4, 25, 25);
+    (1, 1, 30, 25),
+    (2, 2, 100, 70),
+    (3, 3, 75, 50),
+    (4, 4, 25, 20);
 
 -- Inserting data into GroupClasses table
 INSERT INTO GroupClasses (name, day, week) 
 VALUES 
-    ('Yoga Class', 1, 1),
+    ('Boxing Class', 1, 1),
     ('Pilates Class', 2, 1),
     ('Zumba Class', 3, 1),
     ('Cardio Class', 4, 1);
-
--- Inserting data into ClassRegistered table
-INSERT INTO ClassRegistered (memberId, classId) 
-VALUES 
-    (1, 1),
-    (2, 2),
-    (3, 3),
-    (4, 4);
