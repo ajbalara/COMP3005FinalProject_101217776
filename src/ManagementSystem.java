@@ -16,6 +16,7 @@ public class ManagementSystem {
     }
 
     private static User retrieveUserType(){
+        System.out.println("Please enter the type of user that you are: member, trainer or administrator");
         String input;
         while(true){
             System.out.print("Enter your user type: ");
@@ -33,6 +34,7 @@ public class ManagementSystem {
     }
 
     public static void setUpConnection(){
+        System.out.println("Welcome to Ottawa Health and Fitness Club!");
         System.out.println("Setting up DB Connection...");
         try{
             Class.forName("org.postgresql.Driver");
@@ -48,28 +50,31 @@ public class ManagementSystem {
         }
     }
 
+    private static void prepareToDoActivity(){
+        SCANNER.nextLine();
+    }
+
     public static void end(){
         System.out.println("Thank you for using our app! We hope you have a great day");
         try{
             SCANNER.close();
             conn.close();
-            Thread.sleep(2000);
+            Thread.sleep(1000);
         } catch (SQLException | InterruptedException e){}
     }
 
-
     public static void main(String[] args) {
-        System.out.println("Welcome to Ottawa Health and Fitness Club!");
         setUpConnection();
-        System.out.println("Please enter the type of user that you are: member, trainer or administrator");
         User user = retrieveUserType();
         user.setUp();
         while(true){
+            System.out.println();
             user.displayActivities();
             user.getActivity();
             if(user.checkIfExit()){
                 break;
             }
+            prepareToDoActivity();
             user.doActivity();
         }
         end();

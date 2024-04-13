@@ -14,7 +14,6 @@ public class Administrator extends User{
     public void setUp(){}
     @Override
     public void doActivity(){
-        scanner.nextLine();
         switch (nextActivityIndex){
             case 0:
                 manageRoomBooking();
@@ -131,118 +130,6 @@ public class Administrator extends User{
             System.out.println("SQL Exception: " + e.getMessage());
         }
     }
-    /*
-
-    private void updateClassSchedule() {
-        boolean exit = false;
-
-        while (!exit) {
-            // Display all group classes
-            System.out.println("Group Classes:");
-            try (Statement stmt = conn.createStatement()) {
-                ResultSet rs = stmt.executeQuery("SELECT * FROM GroupClasses");
-                while (rs.next()) {
-                    System.out.println("ID: " + rs.getInt("classId") +
-                            ", Name: " + rs.getString("name") +
-                            ", Day: " + rs.getInt("day") +
-                            ", Week: " + rs.getInt("week"));
-                }
-            } catch (SQLException e) {
-                System.out.println("SQL Exception: " + e.getMessage());
-                return;
-            }
-
-            // Prompt user to select a group class to update
-            System.out.print("Select a group class ID to update (enter 0 to exit): ");
-            int classId;
-            try {
-                classId = Integer.parseInt(scanner.nextLine());
-                if (classId == 0) {
-                    System.out.println("Exiting class schedule update.");
-                    return;
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid input. Please enter a number.");
-                continue;
-            }
-
-            // Prompt user to select a field to update
-            System.out.println("Select a field to update:");
-            System.out.println("1. Name");
-            System.out.println("2. Day");
-            System.out.println("3. Week");
-            System.out.print("Enter the number corresponding to the field: ");
-            int fieldChoice;
-            try {
-                fieldChoice = Integer.parseInt(scanner.nextLine());
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid input. Please enter a number.");
-                continue;
-            }
-
-            // Prompt user for new value based on the selected field
-            String fieldName;
-            switch (fieldChoice) {
-                case 1:
-                    fieldName = "name";
-                    System.out.print("Enter the new value for name: ");
-                    break;
-                case 2:
-                    fieldName = "day";
-                    while (true) {
-                        try {
-                            System.out.print("Enter the new value for day: ");
-                            int newValue = Integer.parseInt(scanner.nextLine());
-                            if (newValue < 1 || newValue > 7) {
-                                System.out.println("Invalid input. Day must be between 1 and 7.");
-                                continue;
-                            }
-                            break;
-                        } catch (NumberFormatException e) {
-                            System.out.println("Invalid input. Please enter a number.");
-                        }
-                    }
-                    break;
-                case 3:
-                    fieldName = "week";
-                    while (true) {
-                        try {
-                            System.out.print("Enter the new value for week: ");
-                            int newValue = Integer.parseInt(scanner.nextLine());
-                            if (newValue < 1) {
-                                System.out.println("Invalid input. Week must be a positive integer.");
-                                continue;
-                            }
-                            break;
-                        } catch (NumberFormatException e) {
-                            System.out.println("Invalid input. Please enter a number.");
-                        }
-                    }
-                    break;
-                default:
-                    System.out.println("Invalid field choice.");
-                    continue;
-            }
-            String newValue = scanner.nextLine();
-
-            // Update the selected field for the group class
-            String sqlUpdate = "UPDATE GroupClasses SET " + fieldName + " = ? WHERE classId = ?";
-            try (PreparedStatement preparedStatement = conn.prepareStatement(sqlUpdate)) {
-                preparedStatement.setString(1, newValue);
-                preparedStatement.setInt(2, classId);
-                int rowsAffected = preparedStatement.executeUpdate();
-                if (rowsAffected > 0) {
-                    System.out.println("Group class " + fieldName + " updated successfully.");
-                } else {
-                    System.out.println("Failed to update group class " + fieldName + ".");
-                }
-            } catch (SQLException e) {
-                System.out.println("SQL Exception: " + e.getMessage());
-            }
-        }
-    }
-
-     */
 
     private void updateClassSchedule() {
         boolean exit = false;
@@ -555,6 +442,4 @@ public class Administrator extends User{
             System.out.println("SQL Exception: " + e.getMessage());
         }
     }
-
-
 }

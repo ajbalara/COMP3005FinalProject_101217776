@@ -126,7 +126,6 @@ public class Member extends User{
 
     @Override
     public void doActivity(){
-        scanner.nextLine();
         switch (nextActivityIndex){
             case 0:
                 manageProfile();
@@ -265,8 +264,47 @@ public class Member extends User{
         }
     }
 
-
     private void displayDashboard() {
+        // SQL query to retrieve equipment name, exercise actual, and exercise target for a given member ID
+        String sqlSelect = "SELECT e.name AS equipment_name, ex.actual AS exercise_actual, ex.target AS exercise_target, e.isWeight " +
+                "FROM Exercises ex " +
+                "INNER JOIN Equipment e ON ex.equipmentId = e.equipmentId " +
+                "WHERE ex.memberId = ?";
+
+        try (PreparedStatement preparedStatement = conn.prepareStatement(sqlSelect)) {
+            // Set member ID parameter
+            preparedStatement.setInt(1, id);
+
+            // Execute the query
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            // Flag to check if the dashboard is empty
+            boolean isEmpty = true;
+
+            // Display dashboard data
+            System.out.println("Dashboard for Member ID " + id + ":");
+            while (resultSet.next()) {
+                isEmpty = false;
+
+                String equipmentName = resultSet.getString("equipment_name");
+                double exerciseActual = resultSet.getDouble("exercise_actual");
+                double exerciseTarget = resultSet.getDouble("exercise_target");
+                boolean isWeight = resultSet.getBoolean("isWeight");
+
+                System.out.println("Equipment Name: " + equipmentName +
+                        ", Exercise Actual: " + exerciseActual +
+                        (isWeight ? " lbs" : " minutes") +
+                        ", Exercise Target: " + exerciseTarget +
+                        (isWeight ? " lbs" : " minutes"));
+            }
+
+            // If dashboard is empty, print message
+            if (isEmpty) {
+                System.out.println("Dashboard is empty!");
+            }
+        } catch (SQLException e) {
+            System.out.println("SQL Exception: " + e.getMessage());
+        }
     }
 
     private void manageSchedule() {
