@@ -31,9 +31,7 @@ public class Administrator extends User{
     }
 
     private void manageRoomBooking() {
-
         while (true) {
-            // Display room numbers
             System.out.println("Room Numbers:");
             try (Statement stmt = conn.createStatement()) {
                 ResultSet rs = stmt.executeQuery("SELECT roomNumber FROM RoomData");
@@ -44,7 +42,6 @@ public class Administrator extends User{
                 System.out.println("SQL Exception: " + e.getMessage());
                 return;
             }
-            // Prompt user to select a room
             System.out.print("Select a room number (enter 0 to exit): ");
             int roomNumber;
             try {
@@ -58,7 +55,6 @@ public class Administrator extends User{
                 continue;
             }
 
-            // Display room time slots
             String sqlSelect = "SELECT * FROM RoomTimeSlots WHERE roomNumber = ?";
             try (PreparedStatement preparedStatement = conn.prepareStatement(sqlSelect)) {
                 preparedStatement.setInt(1, roomNumber);
@@ -77,7 +73,6 @@ public class Administrator extends User{
                 return;
             }
 
-            // Prompt user to select a time slot to toggle availability
             int selectedSlot;
             try {
                 System.out.print("Select a time slot to toggle availability (enter 0 to go back to room selection): ");
@@ -111,14 +106,11 @@ public class Administrator extends User{
     }
 
     private void monitorEquipment() {
-        // SQL query to retrieve equipment information
         String sqlSelect = "SELECT equipmentId, name, condition FROM Equipment";
 
         try (PreparedStatement preparedStatement = conn.prepareStatement(sqlSelect)) {
-            // Execute the query to get equipment data
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            // Display equipment information
             System.out.println("Equipment Information:");
             while (resultSet.next()) {
                 System.out.println("ID: " + resultSet.getInt("equipmentId") +
@@ -134,7 +126,6 @@ public class Administrator extends User{
         boolean exit = false;
 
         while (!exit) {
-            // Display all group classes
             System.out.println("Group Classes:");
             try (Statement stmt = conn.createStatement()) {
                 ResultSet rs = stmt.executeQuery("SELECT * FROM GroupClasses");
@@ -149,7 +140,6 @@ public class Administrator extends User{
                 return;
             }
 
-            // Prompt user for action
             System.out.println("Select an action:");
             System.out.println("1. Add a class");
             System.out.println("2. Remove a class");
@@ -185,7 +175,6 @@ public class Administrator extends User{
 
     private void addClass() {
         try {
-            // Prompt user for class details
             System.out.print("Enter class name: ");
             String className = scanner.nextLine();
             System.out.print("Enter day (1-7): ");
@@ -201,7 +190,6 @@ public class Administrator extends User{
                 return;
             }
 
-            // Insert new class into the database
             String sqlInsert = "INSERT INTO GroupClasses (name, day, week) VALUES (?, ?, ?)";
             try (PreparedStatement preparedStatement = conn.prepareStatement(sqlInsert)) {
                 preparedStatement.setString(1, className);
@@ -223,7 +211,6 @@ public class Administrator extends User{
 
     private void removeClass() {
         try {
-            // Prompt user for class ID to remove
             System.out.print("Enter class ID to remove: ");
             int classId = Integer.parseInt(scanner.nextLine());
 
@@ -256,11 +243,9 @@ public class Administrator extends User{
 
     private void updateExistingClass() {
         try {
-            // Prompt user for class ID to update
             System.out.print("Enter class ID to update: ");
             int classId = Integer.parseInt(scanner.nextLine());
 
-            // Prompt user for the field to update
             System.out.println("Select a field to update:");
             System.out.println("1. Name");
             System.out.println("2. Day");
@@ -312,7 +297,6 @@ public class Administrator extends User{
     }
 
     private void deregisterClassMembers(int classId) {
-        // Delete entries from ClassRegistered table
         String sqlDeleteClassRegistered = "DELETE FROM ClassRegistered WHERE classId = ?";
         try (PreparedStatement preparedStatement = conn.prepareStatement(sqlDeleteClassRegistered)) {
             preparedStatement.setInt(1, classId);
@@ -352,7 +336,6 @@ public class Administrator extends User{
     }
 
     private void processPayment() {
-        // Display all members with their IDs, first names, last names, and dollarsOwing
         System.out.println("Member Information:");
         try (Statement stmt = conn.createStatement()) {
             ResultSet rs = stmt.executeQuery("SELECT memberId, firstName, lastName, dollarsOwing FROM MemberData");
@@ -366,15 +349,12 @@ public class Administrator extends User{
             return;
         }
 
-        // Prompt user for member ID
         System.out.print("Enter member ID who made the payment: ");
         int memberId = Integer.parseInt(scanner.nextLine());
 
-        // Prompt user for payment amount
         System.out.print("Enter payment amount: ");
         int paymentAmount = Integer.parseInt(scanner.nextLine());
 
-        // Retrieve current dollarsOwing value
         int currentDollarsOwing;
         String sqlSelect = "SELECT dollarsOwing FROM MemberData WHERE memberId = ?";
         try (PreparedStatement preparedStatement = conn.prepareStatement(sqlSelect)) {
@@ -391,7 +371,6 @@ public class Administrator extends User{
             return;
         }
 
-        // Calculate new dollarsOwing value
         int newDollarsOwing = currentDollarsOwing - paymentAmount;
 
         // Update dollarsOwing value in the database
@@ -411,7 +390,6 @@ public class Administrator extends User{
     }
 
     private void addMoneyToMemberDollarsOwing() {
-        // Display all members with their IDs, first names, last names, and dollarsOwing
         System.out.println("Member Information:");
         try (Statement stmt = conn.createStatement()) {
             ResultSet rs = stmt.executeQuery("SELECT memberId, firstName, lastName, dollarsOwing FROM MemberData");
@@ -425,15 +403,12 @@ public class Administrator extends User{
             return;
         }
 
-        // Prompt user for member ID
         System.out.print("Enter member ID to add money to their dollars owing: ");
         int memberId = Integer.parseInt(scanner.nextLine());
 
-        // Prompt user for amount to add
         System.out.print("Enter amount to add: ");
         int amountToAdd = Integer.parseInt(scanner.nextLine());
 
-        // Retrieve current dollarsOwing value
         int currentDollarsOwing;
         String sqlSelect = "SELECT dollarsOwing FROM MemberData WHERE memberId = ?";
         try (PreparedStatement preparedStatement = conn.prepareStatement(sqlSelect)) {
@@ -450,7 +425,6 @@ public class Administrator extends User{
             return;
         }
 
-        // Calculate new dollarsOwing value
         int newDollarsOwing = currentDollarsOwing + amountToAdd;
 
         // Update dollarsOwing value in the database

@@ -45,7 +45,6 @@ public class Trainer extends User{
             while(rs.next()){
                 trainerIds.add(rs.getInt("trainerId"));
             }
-            // Close resources
             rs.close();
             stmt.close();
             boolean inDB = trainerIds.contains(inputId);
@@ -70,15 +69,12 @@ public class Trainer extends User{
 
     private void manageSchedule() {
         try {
-            // SQL query to retrieve TrainerTimeSlots for a given trainer ID
             String sqlSelect = "SELECT * FROM TrainerTimeSlots WHERE trainerId = ?";
             PreparedStatement preparedStatement = conn.prepareStatement(sqlSelect);
             preparedStatement.setInt(1, id);
 
-            // Execute the query
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            // Display TrainerTimeSlots
             System.out.println("Trainer Time Slots:");
             while (resultSet.next()) {
                 int day = resultSet.getInt("day");
@@ -88,7 +84,6 @@ public class Trainer extends User{
                 System.out.println("Day: " + day + ", Week: " + week + ", Available: " + isAvailable);
             }
 
-            // Prompt user for action
             System.out.println("\nOptions:");
             System.out.println("1. Remove a timeslot");
             System.out.println("2. Add a timeslot");
@@ -136,7 +131,6 @@ public class Trainer extends User{
             if (!isAvailable) {
                 System.out.println("Cannot remove unavailable timeslot.");
             } else {
-                // Delete the timeslot
                 String deleteSql = "DELETE FROM TrainerTimeSlots WHERE trainerId = ? AND day = ? AND week = ?";
                 PreparedStatement deleteStatement = conn.prepareStatement(deleteSql);
                 deleteStatement.setInt(1, id);
@@ -191,28 +185,21 @@ public class Trainer extends User{
     }
 
     private void viewMemberProfile() {
-        // Prompt user for member's first name
         System.out.print("Enter member's first name: ");
         String firstName = scanner.nextLine();
 
-        // Prompt user for member's last name
         System.out.print("Enter member's last name: ");
         String lastName = scanner.nextLine();
 
-        // SQL query to search for member in MemberData table
         String sqlSelect = "SELECT memberId, firstName, lastName, height, weight, avgHeartRate, bloodPressure FROM MemberData WHERE firstName = ? AND lastName = ?";
 
         try (PreparedStatement preparedStatement = conn.prepareStatement(sqlSelect)) {
-            // Set first name parameter
             preparedStatement.setString(1, firstName);
-            // Set last name parameter
             preparedStatement.setString(2, lastName);
 
-            // Execute the query
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
-                // Member found, display the profile as one row
                 System.out.println("Member Profile:");
                 System.out.println("Member ID: " + resultSet.getInt("memberId") +
                         ", First Name: " + resultSet.getString("firstName") +
@@ -222,7 +209,6 @@ public class Trainer extends User{
                         ", Average Heart Rate: " + resultSet.getObject("avgHeartRate") +
                         ", Blood Pressure: " + resultSet.getObject("bloodPressure"));
             } else {
-                // Member not found
                 System.out.println("No member with the given first and last name exists in the database.");
             }
         } catch (SQLException e) {

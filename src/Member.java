@@ -63,7 +63,6 @@ public class Member extends User{
             while(rs.next()){
                 memberIds.add(rs.getInt("memberId"));
             }
-            // Close resources
             rs.close();
             stmt.close();
             boolean inDB = memberIds.contains(inputId);
@@ -84,11 +83,9 @@ public class Member extends User{
 
         int dollarsOwing = ManagementSystem.REGISTRATION_FEE + ManagementSystem.MEMBERSHIP_FEE;
 
-        // SQL query to insert a new member with default values
         String sqlInsert = "INSERT INTO MemberData (firstName, lastName, height, weight, avgHeartRate, bloodPressure, dollarsOwing) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement preparedStatement = conn.prepareStatement(sqlInsert, Statement.RETURN_GENERATED_KEYS)) {
-            // Set parameter values
             preparedStatement.setString(1, firstName);
             preparedStatement.setString(2, lastName);
             preparedStatement.setObject(3, null);
@@ -97,7 +94,6 @@ public class Member extends User{
             preparedStatement.setObject(6, null);
             preparedStatement.setInt(7, dollarsOwing);
 
-            // Execute the insert statement
             int rowsAffected = preparedStatement.executeUpdate();
             if (rowsAffected > 0) {
                 // Retrieve the memberId of the newly inserted row
@@ -138,17 +134,12 @@ public class Member extends User{
         boolean exit = false;
 
         while (!exit) {
-            // SQL query to select member data based on memberId
             String sqlSelect = "SELECT * FROM MemberData WHERE memberId = ?";
 
             try (PreparedStatement preparedStatement = conn.prepareStatement(sqlSelect)) {
-                // Set memberId parameter
                 preparedStatement.setInt(1, id);
 
-                // Execute the query to get member data
                 ResultSet resultSet = preparedStatement.executeQuery();
-
-                // Display member profile
                 if (resultSet.next()) {
                     System.out.println("Member Profile:");
                     System.out.println("1. First Name: " + resultSet.getString("firstName"));
@@ -237,16 +228,12 @@ public class Member extends User{
 
 
     private void updateField(String fieldName, Object newValue) {
-        // SQL query to update member data
         String sqlUpdate = "UPDATE MemberData SET " + fieldName + " = ? WHERE memberId = ?";
 
         try (PreparedStatement preparedStatement = conn.prepareStatement(sqlUpdate)) {
-            // Set new value parameter
             preparedStatement.setObject(1, newValue);
-            // Set memberId parameter
             preparedStatement.setInt(2, id);
 
-            // Execute the update statement
             int rowsAffected = preparedStatement.executeUpdate();
             if (rowsAffected > 0) {
                 System.out.println("Field " + fieldName + " updated successfully.");
@@ -260,23 +247,19 @@ public class Member extends User{
     }
 
     private void displayDashboard() {
-        // SQL query to retrieve equipment name, exercise actual, and exercise target for a given member ID
         String sqlSelect = "SELECT e.name AS equipment_name, ex.actual AS exercise_actual, ex.target AS exercise_target, e.isWeight " +
                 "FROM Exercises ex " +
                 "INNER JOIN Equipment e ON ex.equipmentId = e.equipmentId " +
                 "WHERE ex.memberId = ?";
 
         try (PreparedStatement preparedStatement = conn.prepareStatement(sqlSelect)) {
-            // Set member ID parameter
             preparedStatement.setInt(1, id);
 
-            // Execute the query
             ResultSet resultSet = preparedStatement.executeQuery();
 
             // Flag to check if the dashboard is empty
             boolean isEmpty = true;
 
-            // Display dashboard data
             System.out.println("Dashboard for Member ID " + id + ":");
             while (resultSet.next()) {
                 isEmpty = false;
@@ -304,11 +287,9 @@ public class Member extends User{
 
     private void manageSchedule() {
         try {
-            // Display MemberTimeSlots for the member
             System.out.println("Your Time Slots:");
             displayMemberTimeSlots();
 
-            // Ask the user which schedule they want to view
             System.out.println("\nChoose which schedule you want to view:");
             System.out.println("1. Trainer Schedule");
             System.out.println("2. Group Class Schedule");
@@ -335,15 +316,12 @@ public class Member extends User{
     }
 
     private void displayMemberTimeSlots() throws SQLException {
-        // SQL query to retrieve MemberTimeSlots for the member
         String sqlSelect = "SELECT * FROM MemberTimeSlots WHERE memberId = ?";
         PreparedStatement preparedStatement = conn.prepareStatement(sqlSelect);
         preparedStatement.setInt(1, id);
 
-        // Execute the query
         ResultSet resultSet = preparedStatement.executeQuery();
 
-        // Display MemberTimeSlots
         while (resultSet.next()) {
             int day = resultSet.getInt("day");
             int week = resultSet.getInt("week");
@@ -353,7 +331,6 @@ public class Member extends User{
     }
 
     private void viewTrainerSchedule() throws SQLException {
-        // Display all available time slots for all trainers along with TrainerData
         System.out.println("Trainer Schedule:");
         String sqlSelect = "SELECT TrainerTimeSlots.*, TrainerData.trainerId, TrainerData.firstName, " +
                 "TrainerData.lastName, TrainerData.specialty " +
@@ -363,7 +340,6 @@ public class Member extends User{
         PreparedStatement preparedStatement = conn.prepareStatement(sqlSelect);
         ResultSet resultSet = preparedStatement.executeQuery();
 
-        // Display available time slots, TrainerData, and specialty
         while (resultSet.next()) {
             int trainerId = resultSet.getInt("trainerId");
             int day = resultSet.getInt("day");
@@ -375,7 +351,6 @@ public class Member extends User{
                     ", Specialty: " + specialty + ", Day: " + day + ", Week: " + week);
         }
 
-        // Prompt user to select a time slot to book
         System.out.print("\nEnter the Trainer ID of the time slot you want to book (enter 0 to cancel): ");
         int selectedTrainerId = Integer.parseInt(scanner.nextLine());
         if (selectedTrainerId == 0) {
@@ -388,14 +363,12 @@ public class Member extends User{
         System.out.print("Enter the week of the time slot: ");
         int selectedWeek = Integer.parseInt(scanner.nextLine());
 
-        // Check if the selected time slot is available
         boolean isAvailable = checkTrainerAvailability(selectedTrainerId, selectedDay, selectedWeek);
         if (!isAvailable) {
             System.out.println("The selected time slot is not available.");
             return;
         }
 
-        // Create a new entry in MemberTimeSlots for the member
         String sqlInsert = "INSERT INTO MemberTimeSlots (memberId, day, week, isAvailable) VALUES (?, ?, ?, ?)";
         PreparedStatement insertStatement = conn.prepareStatement(sqlInsert);
         insertStatement.setInt(1, id);
@@ -427,13 +400,11 @@ public class Member extends User{
     }
 
     private void viewGroupClassSchedule() throws SQLException {
-        // Display all group classes along with their details
         System.out.println("Group Class Schedule:");
         String sqlSelect = "SELECT * FROM GroupClasses";
         PreparedStatement preparedStatement = conn.prepareStatement(sqlSelect);
         ResultSet resultSet = preparedStatement.executeQuery();
 
-        // Display group classes
         while (resultSet.next()) {
             int classId = resultSet.getInt("classId");
             String className = resultSet.getString("name");
@@ -442,7 +413,6 @@ public class Member extends User{
             System.out.println("Class ID: " + classId + ", Name: " + className + ", Day: " + day + ", Week: " + week);
         }
 
-        // Prompt user to select a class to register
         System.out.print("\nEnter the Class ID of the class you want to register (enter 0 to cancel): ");
         int selectedClassId = Integer.parseInt(scanner.nextLine());
         if (selectedClassId == 0) {
