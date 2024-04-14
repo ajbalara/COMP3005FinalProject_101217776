@@ -8,7 +8,6 @@ public abstract class User {
     protected final Connection conn;
     protected ArrayList<String> activities;
     protected int nextActivityIndex;
-    public static final String TERMINATE_KEYWORD = "end";
     public User(Scanner scanner, Connection conn){
         this.scanner = scanner;
         this.conn = conn;

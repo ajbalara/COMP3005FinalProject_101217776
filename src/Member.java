@@ -82,12 +82,7 @@ public class Member extends User{
         System.out.print("Enter last name: ");
         String lastName = scanner.nextLine();
 
-        // Default values
-        Double height = null;
-        Integer weight = null;
-        Integer avgHeartRate = null;
-        Integer bloodPressure = null;
-        Integer dollarsOwing = ManagementSystem.REGISTRATION_FEE + ManagementSystem.MEMBERSHIP_FEE;
+        int dollarsOwing = ManagementSystem.REGISTRATION_FEE + ManagementSystem.MEMBERSHIP_FEE;
 
         // SQL query to insert a new member with default values
         String sqlInsert = "INSERT INTO MemberData (firstName, lastName, height, weight, avgHeartRate, bloodPressure, dollarsOwing) VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -96,10 +91,10 @@ public class Member extends User{
             // Set parameter values
             preparedStatement.setString(1, firstName);
             preparedStatement.setString(2, lastName);
-            preparedStatement.setObject(3, height);
-            preparedStatement.setObject(4, weight);
-            preparedStatement.setObject(5, avgHeartRate);
-            preparedStatement.setObject(6, bloodPressure);
+            preparedStatement.setObject(3, null);
+            preparedStatement.setObject(4, null);
+            preparedStatement.setObject(5, null);
+            preparedStatement.setObject(6, null);
             preparedStatement.setInt(7, dollarsOwing);
 
             // Execute the insert statement

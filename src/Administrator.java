@@ -31,9 +31,8 @@ public class Administrator extends User{
     }
 
     private void manageRoomBooking() {
-        boolean exit = false;
 
-        while (!exit) {
+        while (true) {
             // Display room numbers
             System.out.println("Room Numbers:");
             try (Statement stmt = conn.createStatement()) {
@@ -376,7 +375,7 @@ public class Administrator extends User{
         int paymentAmount = Integer.parseInt(scanner.nextLine());
 
         // Retrieve current dollarsOwing value
-        int currentDollarsOwing = 0;
+        int currentDollarsOwing;
         String sqlSelect = "SELECT dollarsOwing FROM MemberData WHERE memberId = ?";
         try (PreparedStatement preparedStatement = conn.prepareStatement(sqlSelect)) {
             preparedStatement.setInt(1, memberId);
@@ -435,7 +434,7 @@ public class Administrator extends User{
         int amountToAdd = Integer.parseInt(scanner.nextLine());
 
         // Retrieve current dollarsOwing value
-        int currentDollarsOwing = 0;
+        int currentDollarsOwing;
         String sqlSelect = "SELECT dollarsOwing FROM MemberData WHERE memberId = ?";
         try (PreparedStatement preparedStatement = conn.prepareStatement(sqlSelect)) {
             preparedStatement.setInt(1, memberId);
