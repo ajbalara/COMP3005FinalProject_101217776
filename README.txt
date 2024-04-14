@@ -9,5 +9,7 @@ The name of the database is COMP3005FinalProject.
 
 The application code can be run through running the ManagementSystem.java file in the src folder.
 
+The report can be found with the GitHub as well.
+
 Below is a link to a video demonstrating the functionality of the code:
 https://youtu.be/X70dqSV2Xfg
